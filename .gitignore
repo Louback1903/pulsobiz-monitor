@@ -1,0 +1,19 @@
+# Segredos (nunca no git)
+secrets.h
+.env
+.env.*
+!.env.example
+local.properties
+*.jks
+*.keystore
+
+# Dependencias e builds
+node_modules/
+__pycache__/
+*.pyc
+build/
+dist/
+
+# Sistema
+Thumbs.db
+.DS_Store
