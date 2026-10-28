@@ -19,7 +19,8 @@
  *      alerta_fora_horario (1)  movimento fora do expediente (com cooldown)
  *
  *  MUDANCAS EM RELACAO A FASE 1
- *    - Envio para a nuvem (HTTPS POST em https://api.tago.io/data).
+ *    - Envio para a nuvem (HTTPS POST em <TAGOIO_API_HOST>/data; padrao
+ *      https://api.tago.io, configuravel no secrets.h).
  *    - PIR lido a cada ciclo do loop (antes: a cada 5 s, podia perder pulsos).
  *    - Histerese no rele e no alerta de temperatura (evita liga/desliga
  *      repetido quando a temperatura oscila perto do limite).
@@ -65,6 +66,11 @@
 #ifndef TAGOIO_DEVICE_TOKEN
 #define TAGOIO_DEVICE_TOKEN ""
 #endif
+// Endereco da API do TagoIO da conta (a regiao da conta pode exigir outro, ex.:
+// https://api.us-e1.tago.io). Defina TAGOIO_API_HOST no secrets.h para trocar.
+#ifndef TAGOIO_API_HOST
+#define TAGOIO_API_HOST "https://api.tago.io"
+#endif
 
 // ---------------------------------------------------------------------------
 // Hardware
@@ -98,8 +104,6 @@ const unsigned long INTERVALO_DISPLAY_MS        = 1000;
 const unsigned long INTERVALO_TELEMETRIA_MS     = 60000;   // demo ao vivo: 10000
 const unsigned long COOLDOWN_ALERTA_HORARIO_MS  = 300000;  // 5 min entre alertas
 const unsigned long INTERVALO_RECONEXAO_WIFI_MS = 15000;
-
-const char* TAGOIO_URL = "https://api.tago.io/data";
 
 // Fuso de Recife/PE: UTC-3, sem horario de verao.
 const long GMT_OFFSET_SEC = -3 * 3600;
@@ -211,7 +215,8 @@ bool enviarParaNuvem(const String& payload) {
 
   HTTPClient http;
   http.setTimeout(5000);
-  if (!http.begin(client, TAGOIO_URL)) {
+  String urlNuvem = String(TAGOIO_API_HOST) + "/data";
+  if (!http.begin(client, urlNuvem)) {
     statusNuvem = "ERRO";
     return false;
   }

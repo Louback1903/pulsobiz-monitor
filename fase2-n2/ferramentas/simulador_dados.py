@@ -8,6 +8,12 @@ O token vem da variavel de ambiente TAGOIO_DEVICE_TOKEN (nunca escreva no codigo
   PowerShell:  $env:TAGOIO_DEVICE_TOKEN = "seu-token"
   Bash:        export TAGOIO_DEVICE_TOKEN="seu-token"
 
+Endereco da API (opcional). Padrao: https://api.tago.io. Se a sua conta do TagoIO
+estiver em outra regiao, defina TAGOIO_API_HOST da mesma forma, por exemplo:
+
+  PowerShell:  $env:TAGOIO_API_HOST = "https://api.us-e1.tago.io"
+  Bash:        export TAGOIO_API_HOST="https://api.us-e1.tago.io"
+
 Uso:
   python simulador_dados.py                         1 rodada de telemetria
   python simulador_dados.py --loop                  telemetria a cada 10 s (Ctrl+C para parar)
@@ -15,6 +21,9 @@ Uso:
   python simulador_dados.py --evento alerta_temperatura
   python simulador_dados.py --evento alerta_temperatura_fim
   python simulador_dados.py --evento alerta_fora_horario
+  python simulador_dados.py --evento pico_hora
+  python simulador_dados.py --evento rele_ligado
+  python simulador_dados.py --evento rele_desligado
 """
 import argparse
 import json
@@ -25,7 +34,7 @@ import time
 import urllib.error
 import urllib.request
 
-URL = "https://api.tago.io/data"
+URL = os.environ.get("TAGOIO_API_HOST", "https://api.tago.io").rstrip("/") + "/data"
 
 
 def var(nome, valor, unidade=None):
@@ -49,6 +58,9 @@ EVENTOS = {
     "alerta_temperatura": lambda: [var("temperatura", 33.5, "C"), var("alerta_temperatura", 1)],
     "alerta_temperatura_fim": lambda: [var("temperatura", 29.0, "C"), var("alerta_temperatura", 0)],
     "alerta_fora_horario": lambda: [var("movimento", 1), var("alerta_fora_horario", 1)],
+    "pico_hora": lambda: [var("pico_hora", random.randint(8, 18), "h")],
+    "rele_ligado": lambda: [var("rele", 1)],
+    "rele_desligado": lambda: [var("rele", 0)],
 }
 
 

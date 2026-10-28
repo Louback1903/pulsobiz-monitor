@@ -8,7 +8,7 @@ Este arquivo é o "acordo" entre as 3 partes do projeto. **Não renomear variáv
 
 ## Como o dispositivo envia
 
-- **Endpoint:** `POST https://api.tago.io/data`
+- **Endpoint:** `POST https://api.tago.io/data` (o endereço base depende da região da conta do TagoIO e é configurável: `TAGOIO_API_HOST` no firmware e no simulador, `TAGO_URL` no app)
 - **Cabeçalhos:** `Content-Type: application/json` e `Device-Token: <token do device>`
 - **Corpo:** array JSON, um objeto por variável. O horário de cada dado é carimbado pelo TagoIO ao receber.
 

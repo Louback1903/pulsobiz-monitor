@@ -10,3 +10,7 @@
 
 // Device Token do dispositivo no TagoIO (Devices > seu device > Tokens).
 #define TAGOIO_DEVICE_TOKEN "cole-aqui-o-device-token"
+
+// Endereco da API do TagoIO da sua conta. Se nao definir, usa https://api.tago.io.
+// Contas na regiao US East 1 podem precisar do endereco abaixo (descomente se for o caso).
+// #define TAGOIO_API_HOST "https://api.us-e1.tago.io"
