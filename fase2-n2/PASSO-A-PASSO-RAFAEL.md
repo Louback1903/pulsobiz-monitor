@@ -8,12 +8,32 @@ O dispositivo (ESP32) manda os dados para o TagoIO, e o seu app lê esses dados 
 
 **Prazo das correções: 02/11. Prazo do APK e dos prints: 04/11.**
 
+## Links e acessos
+
+Você é colaborador do repositório do projeto. Para abrir, use o GitHub logado com a conta que recebeu o convite (aceite o convite por e-mail, ou em `github.com/Louback1903/pulsobiz-monitor/invitations`).
+
+| O quê | Link |
+|---|---|
+| Repositório no GitHub | [github.com/Louback1903/pulsobiz-monitor](https://github.com/Louback1903/pulsobiz-monitor) |
+| Pasta do N2 (guias e ferramentas) | [fase2-n2](https://github.com/Louback1903/pulsobiz-monitor/tree/main/fase2-n2) |
+| Simulador de dados (Passo 8) | [simulador_dados.py](https://github.com/Louback1903/pulsobiz-monitor/blob/main/fase2-n2/ferramentas/simulador_dados.py) |
+| Contrato de dados (nomes das variáveis) | [CONTRATO-DE-DADOS.md](https://github.com/Louback1903/pulsobiz-monitor/blob/main/fase2-n2/CONTRATO-DE-DADOS.md) |
+| Dispositivo rodando no Wokwi | [wokwi.com/projects/479147955272630273](https://wokwi.com/projects/479147955272630273) |
+| Plataforma TagoIO (conta do Júlio) | [admin.tago.io](https://admin.tago.io) |
+| Instalar o Flutter | [docs.flutter.dev/get-started/install](https://docs.flutter.dev/get-started/install) |
+| Python (para o simulador) | [python.org/downloads](https://www.python.org/downloads/) |
+| GitHub Desktop (opcional) | [desktop.github.com](https://desktop.github.com/) |
+
+**O que você precisa receber de outras pessoas:**
+
+- Do **Júlio**, no privado: o **Device Token** do TagoIO. Do Júlio, no grupo: o **endereço da API** da conta dele (a conta está em `api.us-e1.tago.io`, e o endereço padrão do app é `https://api.tago.io`, então pode ser que precise trocar) e o **link público do dashboard**.
+- Do **Thiago**: nada pendente. Se o repositório não abrir para você, avise.
+
 ## Antes de começar
 
 - O Flutter instalado e o projeto `app-mobile` abrindo normalmente.
-- O **Device Token** do TagoIO: peça ao Júlio, **no privado** (nunca no grupo).
-- O **endereço da API** da conta do Júlio: peça a ele também. A conta dele está na região `api.us-e1.tago.io`. O endereço que o app usa por padrão é `https://api.tago.io`, e pode ser que ele precise ser `https://api.us-e1.tago.io`.
-- O arquivo `CONTRATO-DE-DADOS` (com os nomes das variáveis que o dispositivo envia).
+- Acesso ao repositório (tabela acima).
+- O Device Token e o endereço da API (veja acima).
 
 ## O que o dispositivo envia (o que importa para o app)
 
@@ -212,7 +232,7 @@ Tem que aparecer `All tests passed!`. Se aparecer erro de compilação, copie a 
 O Thiago deixou um programa que envia dados de teste ao TagoIO, no mesmo formato do dispositivo.
 
 1. Instale o Python 3 (python.org), marcando a opção **Add Python to PATH**.
-2. Baixe a pasta `fase2-n2/ferramentas/` do repositório: abra `github.com/Louback1903/pulsobiz-monitor`, clique em **Code**, depois **Download ZIP**. Se o link não abrir para você, peça o arquivo `simulador_dados.py` ao Thiago. Abra um terminal (PowerShell) na pasta onde está o `simulador_dados.py`.
+2. Pegue o simulador no repositório: clone o projeto (Passo 13, item 1) ou abra o link do [simulador_dados.py](https://github.com/Louback1903/pulsobiz-monitor/blob/main/fase2-n2/ferramentas/simulador_dados.py), clique em **Raw** e salve o arquivo. Abra um terminal (PowerShell) na pasta onde está o `simulador_dados.py`.
 3. Informe o token (PowerShell):
 
 ```
@@ -296,9 +316,9 @@ O arquivo fica em `build/app/outputs/flutter-apk/app-release.apk`. Instale em um
 
 ## Passo 13 — Enviar o app para o repositório
 
-Você precisa ser colaborador do projeto. Mande o seu usuário do GitHub para o Thiago e aceite o convite que chega por e-mail (ou em `github.com/Louback1903/pulsobiz-monitor/invitations`).
+Você já foi adicionado como colaborador. Se ainda não aceitou o convite, aceite pelo e-mail ou em `github.com/Louback1903/pulsobiz-monitor/invitations`. Sem isso o push é recusado.
 
-1. Clone o repositório (GitHub Desktop: Clone repository, ou no terminal):
+1. Clone o repositório (GitHub Desktop: Clone repository, ou no terminal). Se já clonou antes, rode `git pull` para pegar as novidades:
 
 ```
 git clone https://github.com/Louback1903/pulsobiz-monitor.git
@@ -341,3 +361,5 @@ git push
 - **Token nunca no grupo e nunca no git.** Só em mensagem privada.
 - Mudou o nome de uma variável? Avise o grupo no mesmo dia.
 - **Travou por mais de 1 dia?** Avise o Thiago, com o print do erro.
+- **Tudo tem que ser gratuito.** Se algo pedir plano pago, não pague: avise o Thiago, que leva ao professor.
+- O piloto é demonstrado no **Wokwi** (decidido), então não precisa de hardware real.

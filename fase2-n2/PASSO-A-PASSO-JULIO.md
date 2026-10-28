@@ -8,9 +8,29 @@ O dispositivo (ESP32) manda os dados para a plataforma, e a sua parte é fazer e
 
 **Prazo urgente (item 1 a 3): 30/10. Prazo do resto: 04/11.**
 
+## Links e acessos
+
+Você é colaborador do repositório do projeto. Para abrir, use o GitHub logado com a conta que recebeu o convite (aceite o convite por e-mail, ou em `github.com/Louback1903/pulsobiz-monitor/invitations`).
+
+| O quê | Link |
+|---|---|
+| Repositório no GitHub | [github.com/Louback1903/pulsobiz-monitor](https://github.com/Louback1903/pulsobiz-monitor) |
+| Pasta do N2 (guias e ferramentas) | [fase2-n2](https://github.com/Louback1903/pulsobiz-monitor/tree/main/fase2-n2) |
+| Simulador de dados (Passo 3) | [simulador_dados.py](https://github.com/Louback1903/pulsobiz-monitor/blob/main/fase2-n2/ferramentas/simulador_dados.py) |
+| Contrato de dados (nomes das variáveis) | [CONTRATO-DE-DADOS.md](https://github.com/Louback1903/pulsobiz-monitor/blob/main/fase2-n2/CONTRATO-DE-DADOS.md) |
+| Dispositivo rodando no Wokwi | [wokwi.com/projects/479147955272630273](https://wokwi.com/projects/479147955272630273) |
+| Plataforma TagoIO (sua conta) | [admin.tago.io](https://admin.tago.io) |
+| Python (para o simulador) | [python.org/downloads](https://www.python.org/downloads/) |
+| GitHub Desktop (opcional) | [desktop.github.com](https://desktop.github.com/) |
+
+**O que você precisa entregar para os outros:**
+
+- Para o **Rafael** e o **Thiago**, no privado: o **Device Token**. No grupo: o **endereço da API** da conta e o **link público do dashboard**.
+- Para o **Thiago**, no grupo: a resposta sobre **SMS no plano**.
+
 ## Antes de começar
 
-- A sua conta do TagoIO funcionando (admin.tago.io).
+- A sua conta do TagoIO funcionando ([admin.tago.io](https://admin.tago.io)).
 - O link `admin.tago.io/template/...` que você mandou só abre dentro da sua conta, então o grupo não consegue avaliar o que você montou. Para o grupo, você vai mandar **prints** e um **link público** do dashboard (Passo 4).
 - Python 3 instalado, para rodar o simulador de dados (Passo 3).
 - O e-mail e o celular dos 3 integrantes, para os alertas. Cada um passa o seu para você **no privado**.
@@ -50,7 +70,7 @@ Os nomes dos menus podem variar um pouco, porque o TagoIO muda a tela de tempos 
 O Thiago deixou um programa que envia dados de teste, no mesmo formato do dispositivo.
 
 1. Instale o Python 3 (python.org), marcando a opção **Add Python to PATH**.
-2. Baixe a pasta `fase2-n2/ferramentas/` do repositório: abra `github.com/Louback1903/pulsobiz-monitor`, clique em **Code**, depois **Download ZIP**. Se o link não abrir para você, peça o arquivo `simulador_dados.py` ao Thiago.
+2. Pegue o simulador no repositório: clone o projeto (Passo 10, item 1) ou abra o link do [simulador_dados.py](https://github.com/Louback1903/pulsobiz-monitor/blob/main/fase2-n2/ferramentas/simulador_dados.py), clique em **Raw** e salve o arquivo.
 3. Abra um terminal (PowerShell) na pasta onde está o `simulador_dados.py`.
 4. Informe o token (troque pelo seu):
 
@@ -147,7 +167,7 @@ Em cada uma das duas Actions do Passo 5, adicione também uma ação de **enviar
 
 - Coloque os celulares dos 3 integrantes com o código do país e o DDD, por exemplo `+5581999999999`.
 - **Antes de tudo, descubra se o seu plano do TagoIO inclui SMS.** Em muitos planos gratuitos o SMS é limitado ou pago.
-- **Não pague nada.** Se o SMS não estiver disponível no seu plano, avise o grupo com um print da tela. O Thiago vai perguntar ao professor se há alternativa aceita.
+- **Não pague nada.** O projeto só pode usar o que for gratuito. Se o SMS não estiver disponível no plano gratuito, avise o Thiago com um print da tela: ele leva a dúvida ao professor.
 - Responda no grupo: **o plano inclui SMS? Quantos por mês?** (prazo: 30/10).
 
 ## Passo 7 — Testar os alertas
@@ -192,9 +212,9 @@ Um documento curto, com o passo a passo para refazer tudo. Tópicos:
 
 ## Passo 10 — Enviar para o repositório
 
-Você precisa ser colaborador do projeto. Mande o seu usuário do GitHub para o Thiago e aceite o convite que chega por e-mail (ou em `github.com/Louback1903/pulsobiz-monitor/invitations`).
+Você já foi adicionado como colaborador. Se ainda não aceitou o convite, aceite pelo e-mail ou em `github.com/Louback1903/pulsobiz-monitor/invitations`. Sem isso o push é recusado.
 
-1. Clone o repositório (GitHub Desktop: Clone repository, ou no terminal):
+1. Clone o repositório (GitHub Desktop: Clone repository, ou no terminal). Se já clonou antes, rode `git pull` para pegar as novidades:
 
 ```
 git clone https://github.com/Louback1903/pulsobiz-monitor.git
@@ -221,7 +241,7 @@ git push
 | `HTTP 200`, mas nada aparece no TagoIO | está olhando o device errado | confira que o token é do device "PulsoBiz Monitor" |
 | Chegou alerta quando a temperatura normalizou | a condição da Action não é "igual a 1" | corrija a condição (Passo 5) |
 | Não chega e-mail | o e-mail caiu em spam, ou a Action está desativada | veja o spam e confira que a Action está ativa |
-| Não chega SMS | o plano não inclui SMS | avise o grupo (Passo 6) |
+| Não chega SMS | o plano gratuito não inclui SMS | não pague; avise o Thiago com print (Passo 6) |
 
 ## O que entregar ao Thiago
 
@@ -240,3 +260,5 @@ git push
 - **Token nunca no grupo, nunca em print e nunca no git.** Só em mensagem privada. Se vazar, troque o token no TagoIO.
 - Mudou o nome de uma variável? Avise o grupo no mesmo dia.
 - **Travou por mais de 1 dia?** Avise o Thiago, com print.
+- **Tudo tem que ser gratuito.** Se algo pedir plano pago, não pague: avise o Thiago, que leva ao professor.
+- O piloto é demonstrado no **Wokwi** (decidido), então não precisa de hardware real.

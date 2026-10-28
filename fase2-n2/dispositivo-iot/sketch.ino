@@ -72,6 +72,19 @@
 #define TAGOIO_API_HOST "https://api.tago.io"
 #endif
 
+// Valores ajustaveis sem mexer no codigo: defina no secrets.h para a demonstracao.
+// Ex.: #define INTERVALO_TELEMETRIA_MS 10000UL   (envia a cada 10 s)
+//      #define HORA_FECHAMENTO 12                (expediente 8h-12h: testa o alerta fora do horario)
+#ifndef HORA_ABERTURA
+#define HORA_ABERTURA 8          // expediente: [8h, 18h)
+#endif
+#ifndef HORA_FECHAMENTO
+#define HORA_FECHAMENTO 18
+#endif
+#ifndef INTERVALO_TELEMETRIA_MS
+#define INTERVALO_TELEMETRIA_MS 60000UL
+#endif
+
 // ---------------------------------------------------------------------------
 // Hardware
 // ---------------------------------------------------------------------------
@@ -96,12 +109,8 @@ const float TEMP_RELE_DESLIGA_C    = 27.0;  // desliga (1 grau abaixo: histerese
 const float TEMP_ALERTA_LIGA_C     = 32.0;  // dispara alerta (SMS/e-mail)
 const float TEMP_ALERTA_DESLIGA_C  = 31.0;  // normalizou
 
-const int HORA_ABERTURA   = 8;   // expediente: [8h, 18h)
-const int HORA_FECHAMENTO = 18;
-
 const unsigned long INTERVALO_LEITURA_DHT_MS    = 5000;
 const unsigned long INTERVALO_DISPLAY_MS        = 1000;
-const unsigned long INTERVALO_TELEMETRIA_MS     = 60000;   // demo ao vivo: 10000
 const unsigned long COOLDOWN_ALERTA_HORARIO_MS  = 300000;  // 5 min entre alertas
 const unsigned long INTERVALO_RECONEXAO_WIFI_MS = 15000;
 

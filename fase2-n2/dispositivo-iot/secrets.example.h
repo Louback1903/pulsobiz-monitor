@@ -14,3 +14,7 @@
 // Endereco da API do TagoIO da sua conta. Se nao definir, usa https://api.tago.io.
 // Contas na regiao US East 1 podem precisar do endereco abaixo (descomente se for o caso).
 // #define TAGOIO_API_HOST "https://api.us-e1.tago.io"
+
+// Opcional, para a demonstracao (descomente se quiser):
+// #define INTERVALO_TELEMETRIA_MS 10000UL   // envia a telemetria a cada 10 s (padrao: 60 s)
+// #define HORA_FECHAMENTO 12                // expediente 8h-12h, para testar o alerta fora do horario

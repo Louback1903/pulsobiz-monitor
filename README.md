@@ -39,6 +39,8 @@ Um dispositivo de baixo custo baseado em ESP32 que mede temperatura, umidade e m
 | 2. App mobile | Rafael Luiz | `fase2-n2/app-mobile/` |
 | 3. Dispositivo IoT (ESP32) | Thiago Louback | `fase2-n2/dispositivo-iot/` |
 
+Decisões do N2: a plataforma é o **TagoIO**, o piloto é demonstrado no **simulador Wokwi** (sem hardware real) e o projeto usa **somente ferramentas gratuitas**.
+
 Detalhes de cada tarefa, prazos e critérios de pronto: [`fase2-n2/DIVISAO-DE-TAREFAS.md`](fase2-n2/DIVISAO-DE-TAREFAS.md).
 As variáveis trocadas entre as 3 partes estão em [`fase2-n2/CONTRATO-DE-DADOS.md`](fase2-n2/CONTRATO-DE-DADOS.md). Não renomear variáveis sem avisar o grupo.
 
@@ -56,7 +58,7 @@ documentacao/           Documentação da Fase 1 (Word e PDF)
 
 ## Como rodar
 
-**Simulação da Fase 1 (sem hardware):** [projeto no Wokwi](https://wokwi.com/projects/475972475555360769). Abra o link e clique em Play. Para gerar movimento, clique no sensor PIR e escolha "Simulate motion".
+**Simulação (sem hardware):** [Fase 1 no Wokwi](https://wokwi.com/projects/475972475555360769) e [N2 (firmware com envio à nuvem) no Wokwi](https://wokwi.com/projects/479147955272630273). Abra o link e clique em Play. Para gerar movimento, clique no sensor PIR e escolha "Simulate motion".
 
 **Firmware do N2 (`fase2-n2/dispositivo-iot/`):**
 1. Abra o `sketch.ino` no Arduino IDE (placa ESP32) ou no Wokwi, com as bibliotecas de `libraries.txt`.

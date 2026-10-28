@@ -20,9 +20,25 @@ O professor pede um projeto completo de IoT com 3 peças que conversam entre si:
 
 Se alguém preferir trocar de parte, é só combinar no grupo antes de começar. O que não muda são os nomes das variáveis do `CONTRATO-DE-DADOS.md`.
 
+## Links e acessos
+
+O repositório é do Thiago (conta `Louback1903`) e o Júlio e o Rafael são colaboradores: para abrir, é preciso estar logado no GitHub com a conta que recebeu o convite (aceite o convite por e-mail, ou em `github.com/Louback1903/pulsobiz-monitor/invitations`).
+
+| O quê | Link |
+|---|---|
+| Repositório no GitHub | [github.com/Louback1903/pulsobiz-monitor](https://github.com/Louback1903/pulsobiz-monitor) |
+| Simulador de dados (para testar sem o ESP32) | [simulador_dados.py](https://github.com/Louback1903/pulsobiz-monitor/blob/main/fase2-n2/ferramentas/simulador_dados.py) |
+| Contrato de dados (nomes das variáveis) | [CONTRATO-DE-DADOS.md](https://github.com/Louback1903/pulsobiz-monitor/blob/main/fase2-n2/CONTRATO-DE-DADOS.md) |
+| Passo a passo do Júlio e do Rafael | [pasta fase2-n2](https://github.com/Louback1903/pulsobiz-monitor/tree/main/fase2-n2) |
+| Dispositivo rodando no Wokwi | [wokwi.com/projects/479147955272630273](https://wokwi.com/projects/479147955272630273) |
+| Plataforma TagoIO | [admin.tago.io](https://admin.tago.io) |
+| Python (para o simulador) | [python.org/downloads](https://www.python.org/downloads/) |
+
 ## Decisões já tomadas
 
-- **Plataforma: TagoIO.** É o exemplo que o professor mostrou, tem dashboard e alertas por e-mail/SMS embutidos e é o caminho mais rápido. O professor também aceita AWS e ThingSpeak.
+- **Plataforma: TagoIO (confirmado).** É o exemplo que o professor mostrou, tem dashboard e alertas por e-mail/SMS embutidos e é o caminho mais rápido. O professor também aceita AWS e ThingSpeak.
+- **Piloto no Wokwi (confirmado).** O dispositivo será demonstrado no simulador Wokwi, sem hardware real.
+- **Só ferramentas gratuitas.** Se algo exigir pagamento (por exemplo, SMS no TagoIO), **não pague**: avise o Thiago, que leva ao professor.
 - **Google Cloud (material do professor):** o Cloud IoT Core foi descontinuado em 16/08/2023. Hoje o Google recomenda 3 arquiteturas (MQTT Broker, IoT Platform, Device para Pub/Sub). Dá muito mais trabalho de configuração, então fica como **referência para citar na apresentação** como caminho de evolução.
 - **Contrato de dados:** `fase2-n2/CONTRATO-DE-DADOS.md` define as variáveis, os alertas e o formato. É ele que permite as 3 partes serem feitas em paralelo.
 - **Ninguém espera o hardware:** existe o simulador `fase2-n2/ferramentas/simulador_dados.py`, que envia dados de teste no mesmo formato do ESP32.
@@ -35,7 +51,7 @@ Se alguém preferir trocar de parte, é só combinar no grupo antes de começar.
 1. Conta no TagoIO e um device "PulsoBiz Monitor" com o **Device Token**. Passe o token para o Thiago (firmware) e para o Rafael (app) por **mensagem privada**, nunca no grupo e nunca no git.
 2. **Dashboard** com: valor atual de temperatura e umidade; gráfico de linha de temperatura e umidade nas últimas 24 h; gráfico de barras de movimentos por hora (soma de `movimento` agrupada por hora); valor do horário de pico (`pico_hora`); indicador do relé (`rele`); lista dos últimos alertas.
 3. **Alertas por e-mail** (Actions do TagoIO): `alerta_temperatura` = 1 e `alerta_fora_horario` = 1, enviando para os 3 integrantes.
-4. **Alertas por SMS**: mesmas condições. Confirmar no plano gratuito se SMS está incluído e quantos podem ser enviados. Se não estiver, avisar o grupo e levar a dúvida ao professor.
+4. **Alertas por SMS**: mesmas condições. Confirmar no plano gratuito se SMS está incluído e quantos podem ser enviados. Se não estiver (e exigir plano pago), **não pague**: avisar o Thiago, que leva a dúvida ao professor.
 5. **Link público do dashboard** para o Rafael usar no app (plano B rápido via WebView).
 6. **Documento curto** `docs/plataforma.md` com prints e o passo a passo para refazer tudo (vai para o git).
 
@@ -65,29 +81,28 @@ Se alguém preferir trocar de parte, é só combinar no grupo antes de começar.
 **Já está pronto** (em `fase2-n2/dispositivo-iot/`): firmware v2 do ESP32 que mantém tudo da Fase 1 e agora envia telemetria e eventos ao TagoIO por HTTPS, com alertas de temperatura e de movimento fora do expediente, anti-spam de 5 minutos e reconexão do Wi-Fi.
 
 **Falta fazer**
-1. Receber o Device Token do Júlio, criar o `secrets.h` (copiando o `secrets.example.h`) e conferir os dados chegando no TagoIO.
-2. Testar o fluxo no Wokwi e, se o professor exigir hardware real, montar o kit.
-3. Ajustar `HORA_ABERTURA`/`HORA_FECHAMENTO` e os limites de temperatura para o cenário da demonstração.
-4. Organizar o repositório no git (README com empresa, equipe e produto) e atualizar os slides do Canva para o N2.
+1. Receber o Device Token do Júlio e conferir os dados chegando no TagoIO (no Wokwi, colando o token só durante o teste: veja `fase2-n2/dispositivo-iot/DEMO-NO-WOKWI.md`).
+2. Preparar a demonstração no Wokwi (decidido: o piloto é no simulador).
+3. Ajustar o expediente e o intervalo de envio para a demonstração (`HORA_FECHAMENTO`, `INTERVALO_TELEMETRIA_MS`, no `secrets.h`).
+4. Organizar o repositório no git e atualizar os slides do Canva e os documentos para o N2.
 
-**Kit para a versão com hardware real:** ESP32 DevKit V1, sensor DHT22, sensor PIR (HC-SR501), módulo relé 5 V, display OLED SSD1306 I2C 0,96", protoboard e jumpers.
+**Opcional, só se o grupo quiser mostrar hardware real:** ESP32 DevKit V1, sensor DHT22, sensor PIR (HC-SR501), módulo relé 5 V, display OLED SSD1306 I2C 0,96", protoboard e jumpers.
 
 ## Cronograma (alinhado à Jornada do professor)
 
 | Período | Etapa da Jornada | O que deve estar pronto |
 |---|---|---|
-| até 21/10 | Desenho da solução e dimensionamento | Divisão aprovada, conta no TagoIO, device e token criados, primeiros dados chegando (simulador ou ESP32) |
-| 22/10 a 28/10 | Experimento | Dashboard básico com temperatura, umidade e movimentos; app lendo 1 variável |
-| 29/10 a 04/11 | Instalação, configuração e dashboards | Alertas por e-mail e SMS funcionando; app com as 3 telas |
-| 05/11 a 11/11 | Estabilização | Teste ponta a ponta, correção de falhas, hardware real (se for exigido) |
-| 12/11 a 17/11 | Ajustes e evoluções | Documentação no git, slides, ensaio da apresentação e vídeo de reserva da demonstração |
+| até 30/10 | Desenho da solução e dimensionamento | Júlio: endereço da API, Device Token (privado) e resposta sobre SMS no plano gratuito |
+| 31/10 a 02/11 | Experimento | Rafael: correções do app entregues e testadas com o simulador |
+| 03/11 a 04/11 | Instalação, configuração e dashboards | Júlio: dashboard, alertas por e-mail e SMS e link público. Rafael: APK e prints |
+| 05/11 | Teste integrado | Dispositivo (Wokwi), plataforma e app juntos, com dado real |
+| 06/11 a 11/11 | Estabilização | Correção de falhas e conteúdo de cada um para os slides (até 11/11) |
+| 12/11 a 17/11 | Ajustes e evoluções | Documentação no git, slides, ensaio (3 minutos por pessoa) e vídeo de reserva da demonstração |
 | **18/11** | Apresentação do piloto | Cada um apresenta a sua parte e o grupo faz a demonstração completa |
 
-## Dúvidas para levar ao professor
+## Regra de custo
 
-1. O piloto pode ser demonstrado com o dispositivo **simulado no Wokwi** ou precisa ser com hardware real?
-2. O envio de **SMS** pode usar o limite do plano gratuito, ou existe uma alternativa aceita?
-3. Pode ser **TagoIO**?
+Tudo que o projeto usar tem que ser **gratuito**. Se algo exigir pagamento ou plano pago (por exemplo, SMS no TagoIO), **não pague e não assine nada**: avise o Thiago com um print da tela, e ele leva a dúvida ao professor.
 
 ## Regras do grupo
 
