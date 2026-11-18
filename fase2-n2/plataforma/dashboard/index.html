@@ -3,16 +3,42 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b1d12">
+<meta name="theme-color" content="#0b1410">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="icone-192.png">
+<link rel="manifest" href="manifest.webmanifest">
 <title>PulsoBiz Monitor</title>
 <style>
   :root { --bg:#0b1410; --card:#12211a; --line:#20382b; --txt:#e8f3ec; --mut:#8fa99a; --ok:#4caf50; --warn:#ffb300; --bad:#ef5350; --acc:#43d17a; }
   * { box-sizing: border-box; }
   body { margin:0; background:var(--bg); color:var(--txt); font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
-  header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line); }
-  h1 { margin:0; font-size:18px; letter-spacing:.3px; } h1 span { color:var(--acc); }
+  [hidden] { display:none !important; }
+  /* ---- login ---- */
+  #login { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+           background:radial-gradient(900px 500px at 50% -10%, #14301f 0%, var(--bg) 70%); }
+  .login-box { width:100%; max-width:380px; text-align:center; }
+  .login-box img.sim { width:104px; height:104px; filter:drop-shadow(0 0 24px #43d17a55); }
+  .login-box h1 { margin:14px 0 2px; font-size:30px; letter-spacing:.3px; } h1 span, header h1 span { color:var(--acc); }
+  .login-box p.sub { color:var(--mut); margin:0 0 22px; }
+  .form { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; text-align:left; }
+  label { display:block; font-size:12px; color:var(--mut); margin:0 0 6px; text-transform:uppercase; letter-spacing:.6px; }
+  input { width:100%; padding:12px 14px; margin-bottom:14px; background:#0e1a14; color:var(--txt); border:1px solid var(--line); border-radius:10px; font-size:16px; }
+  input:focus { outline:2px solid #43d17a66; border-color:var(--acc); }
+  button { width:100%; padding:13px; border:0; border-radius:10px; background:var(--acc); color:#06210f; font-size:16px; font-weight:700; cursor:pointer; }
+  button:disabled { opacity:.6; cursor:wait; }
+  .link { background:none; color:var(--mut); font-weight:500; font-size:14px; margin-top:12px; text-decoration:underline; }
+  .erro { color:#ff8a80; font-size:14px; min-height:20px; margin:-4px 0 8px; }
+  .nota { color:var(--mut); font-size:12px; margin-top:18px; }
+  /* ---- painel ---- */
+  header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  .marca { display:flex; align-items:center; gap:10px; }
+  .marca img { width:36px; height:36px; }
+  header h1 { margin:0; font-size:18px; letter-spacing:.3px; line-height:1.1; }
+  header small { display:block; color:var(--mut); font-size:12px; }
+  .acoes { display:flex; align-items:center; gap:8px; }
   .chip { padding:4px 10px; border-radius:99px; font-size:12px; background:#1b2e24; color:var(--mut); }
-  .chip.on { background:#143d24; color:var(--acc); } .chip.off { background:#401919; color:#ff8a80; }
+  .chip.on { background:#143d24; color:var(--acc); } .chip.off { background:#401919; color:#ff8a80; } .chip.demo { background:#3a3012; color:var(--warn); }
+  .sair { width:auto; padding:6px 12px; background:#1b2e24; color:var(--txt); font-size:13px; font-weight:600; }
   main { max-width:1100px; margin:0 auto; padding:14px; display:grid; gap:12px; }
   .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
   .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; }
@@ -28,37 +54,119 @@
 </style>
 </head>
 <body>
-<header>
-  <h1>Pulso<span>Biz</span> Monitor</h1>
-  <div id="status" class="chip">carregando...</div>
-</header>
-<main>
-  <section class="kpis">
-    <div class="card"><h2>Temperatura</h2><div class="big" id="temp">--</div><div class="sub" id="tempSub">&nbsp;</div></div>
-    <div class="card"><h2>Umidade</h2><div class="big" id="umid">--</div><div class="sub">relativa do ar</div></div>
-    <div class="card"><h2>Ventilador (relé)</h2><div class="big" id="rele">--</div><div class="sub">liga acima de 28 °C</div></div>
-    <div class="card"><h2>Movimento</h2><div class="big" id="mov">--</div><div class="sub" id="movSub">&nbsp;</div></div>
-    <div class="card"><h2>Horário de pico</h2><div class="big" id="pico">--</div><div class="sub" id="picoSub">últimas 24 h</div></div>
-    <div class="card"><h2>Lotação</h2><div class="big" id="lot">--</div><div class="sub">pessoas na loja agora</div></div>
-    <div class="card"><h2>Temperatura ideal</h2><div class="big" id="ideal">--</div><div class="sub" id="idealSub">&nbsp;</div></div>
-    <div class="card"><h2>Alertas (24 h)</h2><div class="big" id="nAlert">--</div><div class="sub" id="nMov">&nbsp;</div></div>
-  </section>
-  <section class="grid2">
-    <div class="card"><h2>Temperatura e umidade (24 h)</h2>
-      <div class="legend"><span><i style="background:#ffb300"></i>Temperatura °C</span><span><i style="background:#4fc3f7"></i>Umidade %</span></div>
-      <canvas id="linha"></canvas></div>
-    <div class="card"><h2>Movimentos por hora</h2>
-      <div class="legend"><span><i style="background:#43d17a"></i>movimentos</span><span><i style="background:#ff7043"></i>pico</span></div>
-      <canvas id="barras"></canvas></div>
-  </section>
-  <section class="card"><h2>Últimos alertas</h2><div id="alertas"></div></section>
-</main>
-<footer>Atualiza sozinho a cada 5 s. Dados enviados pelo dispositivo ESP32.</footer>
+
+<!-- Tela de login -->
+<section id="login" hidden>
+  <div class="login-box">
+    <img class="sim" src="simbolo.png" alt="PulsoBiz">
+    <h1>Pulso<span>Biz</span></h1>
+    <p class="sub">Monitor do seu comércio</p>
+    <form class="form" id="form">
+      <label for="email">E-mail</label>
+      <input id="email" type="email" autocomplete="username" inputmode="email" required>
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" autocomplete="current-password" required>
+      <div class="erro" id="erro"></div>
+      <button id="entrar" type="submit">Entrar</button>
+      <button class="link" id="demo" type="button">Ver demonstração</button>
+    </form>
+    <p class="nota">Acesso fornecido pela PulsoBiz. Não tem login? Fale com a sua equipe PulsoBiz.</p>
+  </div>
+</section>
+
+<!-- Painel -->
+<section id="painel" hidden>
+  <header>
+    <div class="marca">
+      <img src="simbolo.png" alt="">
+      <div><h1>Pulso<span>Biz</span> Monitor</h1><small id="loja">&nbsp;</small></div>
+    </div>
+    <div class="acoes">
+      <div id="status" class="chip">carregando...</div>
+      <button class="sair" id="sair" type="button">Sair</button>
+    </div>
+  </header>
+  <main>
+    <section class="kpis">
+      <div class="card"><h2>Temperatura</h2><div class="big" id="temp">--</div><div class="sub" id="tempSub">&nbsp;</div></div>
+      <div class="card"><h2>Umidade</h2><div class="big" id="umid">--</div><div class="sub">relativa do ar</div></div>
+      <div class="card"><h2>Ventilador (relé)</h2><div class="big" id="rele">--</div><div class="sub">liga acima de 28 °C</div></div>
+      <div class="card"><h2>Movimento</h2><div class="big" id="mov">--</div><div class="sub" id="movSub">&nbsp;</div></div>
+      <div class="card"><h2>Lotação</h2><div class="big" id="lot">--</div><div class="sub">pessoas na loja agora</div></div>
+      <div class="card"><h2>Temperatura ideal</h2><div class="big" id="ideal">--</div><div class="sub" id="idealSub">&nbsp;</div></div>
+      <div class="card"><h2>Horário de pico</h2><div class="big" id="pico">--</div><div class="sub" id="picoSub">últimas 24 h</div></div>
+      <div class="card"><h2>Alertas (24 h)</h2><div class="big" id="nAlert">--</div><div class="sub" id="nMov">&nbsp;</div></div>
+    </section>
+    <section class="grid2">
+      <div class="card"><h2>Temperatura e umidade (24 h)</h2>
+        <div class="legend"><span><i style="background:#ffb300"></i>Temperatura °C</span><span><i style="background:#4fc3f7"></i>Umidade %</span></div>
+        <canvas id="linha"></canvas></div>
+      <div class="card"><h2>Movimentos por hora</h2>
+        <div class="legend"><span><i style="background:#43d17a"></i>movimentos</span><span><i style="background:#ff7043"></i>pico</span></div>
+        <canvas id="barras"></canvas></div>
+    </section>
+    <section class="card"><h2>Últimos alertas</h2><div id="alertas"></div></section>
+  </main>
+  <footer id="rodape">Atualiza sozinho a cada 5 s.</footer>
+</section>
+
 <script>
-// Endereco da funcao "data" do Supabase (sem a parte ?view=...). Ajustado na publicacao.
-const API = "https://mhkaowtdlwbtrnqbftcr.supabase.co/functions/v1/data";
+// ---- configuracao (chave publica do Supabase: pode ficar no navegador) ----
+const SUPABASE = "https://mhkaowtdlwbtrnqbftcr.supabase.co";
+const API = SUPABASE + "/functions/v1/data";
+const CHAVE = "sb_publishable_fmLZEiu8o7i0qN3xoAE6_w_6AmsHzl1";
 const FUSO = "America/Recife";
 const $ = (id) => document.getElementById(id);
+
+// ---- sessao (login do cliente) ----
+let sessao = null; // { access, refresh, exp, email }
+let modoDemo = false;
+let timer = null;
+const guardar = () => { try { sessao ? localStorage.setItem("pulsobiz.sessao", JSON.stringify(sessao)) : localStorage.removeItem("pulsobiz.sessao"); } catch (e) {} };
+const carregarSessao = () => { try { return JSON.parse(localStorage.getItem("pulsobiz.sessao") || "null"); } catch (e) { return null; } };
+
+async function pedirToken(corpo, tipo) {
+  const r = await fetch(`${SUPABASE}/auth/v1/token?grant_type=${tipo}`, {
+    method: "POST", headers: { "apikey": CHAVE, "Content-Type": "application/json" }, body: JSON.stringify(corpo),
+  });
+  const d = await r.json();
+  if (!r.ok || !d.access_token) throw new Error(d.error_description || d.msg || "Não foi possível entrar.");
+  return { access: d.access_token, refresh: d.refresh_token, exp: Date.now() + (d.expires_in - 60) * 1000, email: (d.user && d.user.email) || (sessao && sessao.email) || "" };
+}
+
+async function tokenValido() {
+  if (!sessao) return null;
+  if (Date.now() < sessao.exp) return sessao.access;
+  try { sessao = await pedirToken({ refresh_token: sessao.refresh }, "refresh_token"); guardar(); return sessao.access; }
+  catch (e) { sessao = null; guardar(); return null; }
+}
+
+// ---- telas ----
+function mostrarLogin(msg) {
+  clearInterval(timer); sessao = sessao && null; modoDemo = false;
+  $("painel").hidden = true; $("login").hidden = false; $("erro").textContent = msg || "";
+  $("senha").value = "";
+}
+function mostrarPainel() {
+  $("login").hidden = true; $("painel").hidden = false;
+  $("rodape").textContent = modoDemo ? "Modo demonstração: dados de uma loja de exemplo. Atualiza sozinho a cada 5 s." : "Atualiza sozinho a cada 5 s.";
+  carregar(); clearInterval(timer); timer = setInterval(carregar, 5000);
+}
+
+$("form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const b = $("entrar"); b.disabled = true; b.textContent = "Entrando..."; $("erro").textContent = "";
+  try {
+    sessao = await pedirToken({ email: $("email").value.trim(), password: $("senha").value }, "password");
+    guardar(); modoDemo = false; mostrarPainel();
+  } catch (e) {
+    $("erro").textContent = /invalid|credentials/i.test(e.message) ? "E-mail ou senha incorretos." : e.message;
+  } finally { b.disabled = false; b.textContent = "Entrar"; }
+});
+$("demo").addEventListener("click", () => { modoDemo = true; sessao = null; mostrarPainel(); });
+$("sair").addEventListener("click", () => { sessao = null; guardar(); modoDemo = false; history.replaceState(null, "", location.pathname); mostrarLogin(); });
+
+// ---- desenho ----
 const fmtHora = (t) => new Date(t).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: FUSO });
 const fmtDataHora = (t) => new Date(t).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: FUSO });
 
@@ -74,7 +182,7 @@ function desenharLinhas(canvas, series) {
   const todos = series.flatMap((s) => s.pts); if (todos.length < 2) { c.fillStyle = "#8fa99a"; c.font = "13px system-ui"; c.textAlign = "center"; c.fillText("Aguardando dados...", w / 2, h / 2); return; }
   const t0 = Math.min(...todos.map((p) => p[0])), t1 = Math.max(...todos.map((p) => p[0]));
   const x = (t) => pad.l + ((t - t0) / Math.max(t1 - t0, 1)) * (w - pad.l - pad.r);
-  c.strokeStyle = "#20382b"; c.fillStyle = "#8fa99a"; c.font = "11px system-ui"; c.lineWidth = 1;
+  c.font = "11px system-ui"; c.lineWidth = 1;
   series.forEach((s, i) => {
     if (s.pts.length === 0) return;
     const vs = s.pts.map((p) => p[1]); let mn = Math.min(...vs), mx = Math.max(...vs); if (mx - mn < 2) { mx += 1; mn -= 1; }
@@ -102,11 +210,11 @@ function desenharBarras(canvas, horas, pico) {
 let ultimo = null;
 function render(d) {
   ultimo = d; const L = d.latest, agora = new Date(d.now).getTime();
-  const idade = Math.max(0, ...["temperatura", "umidade"].map((k) => (L[k] ? 0 : 1e12)));
+  $("loja").textContent = d.loja ? d.loja.nome : "";
   const ref = L.temperatura ? new Date(L.temperatura.t).getTime() : 0;
   const online = ref && agora - ref < 3 * 60 * 1000;
-  $("status").textContent = online ? "dispositivo online" : (ref ? "sem dados há " + Math.round((agora - ref) / 60000) + " min" : "sem dados ainda");
-  $("status").className = "chip " + (online ? "on" : "off");
+  if (modoDemo) { $("status").textContent = "demonstração"; $("status").className = "chip demo"; }
+  else { $("status").textContent = online ? "dispositivo online" : (ref ? "sem dados há " + Math.round((agora - ref) / 60000) + " min" : "sem dados ainda"); $("status").className = "chip " + (online ? "on" : "off"); }
   const tv = L.temperatura ? Number(L.temperatura.v) : null;
   $("temp").innerHTML = tv === null ? "--" : tv.toFixed(1) + "<small> °C</small>";
   $("tempSub").textContent = tv === null ? "" : (tv > 32 ? "ALERTA: acima de 32 °C" : tv > 28 ? "acima de 28 °C" : "normal");
@@ -137,12 +245,24 @@ function render(d) {
 
 async function carregar() {
   try {
-    const r = await fetch(API + "?view=dashboard", { cache: "no-store" });
+    const headers = {};
+    if (!modoDemo) {
+      const tk = await tokenValido();
+      if (!tk) { mostrarLogin("Sua sessão expirou. Entre novamente."); return; }
+      headers["Authorization"] = "Bearer " + tk;
+    }
+    const r = await fetch(API + "?view=dashboard", { cache: "no-store", headers });
+    if (r.status === 401) { sessao = null; guardar(); mostrarLogin("Sua sessão expirou. Entre novamente."); return; }
     const d = await r.json(); if (d.status) render(d);
   } catch (e) { $("status").textContent = "sem conexão"; $("status").className = "chip off"; }
 }
-addEventListener("resize", () => ultimo && render(ultimo));
-carregar(); setInterval(carregar, 5000);
+addEventListener("resize", () => ultimo && !$("painel").hidden && render(ultimo));
+
+// ---- inicio ----
+sessao = carregarSessao();
+if (sessao) { modoDemo = false; mostrarPainel(); }
+else if (location.hash === "#demo") { modoDemo = true; mostrarPainel(); }
+else { mostrarLogin(); }
 </script>
 </body>
 </html>

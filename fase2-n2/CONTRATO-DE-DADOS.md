@@ -67,9 +67,10 @@ O mesmo alerta de temperatura ou fora do horário só dispara de novo depois de 
 
 ## Leitura pelo app (API REST)
 
-- `GET <host>/data?variable=temperatura&qty=1` com o cabeçalho `Device-Token` devolve `{"status":true,"result":[{"variable","value","unit","time"}]}`, da mais recente para a mais antiga. Parâmetros: `variable`, `qty` (até 10000) e `start_date`.
-- `GET <host>/data?view=dashboard` (público, só leitura) devolve os dados prontos do dashboard.
-- **Segurança:** o token que o app usar fica dentro do APK e pode ser extraído. Nunca commitar no git e trocar o token depois da apresentação.
+- `GET <host>/data?variable=temperatura&qty=1` devolve `{"status":true,"result":[{"variable","value","unit","time"}]}`, da mais recente para a mais antiga. Parâmetros: `variable`, `qty` (até 10000) e `start_date`.
+- `GET <host>/data?view=dashboard` devolve os dados prontos do painel (valores atuais, lotação, temperatura ideal, séries e alertas).
+- **Quem lê e como:** o app e o dashboard usam o **login do cliente** (`Authorization: Bearer <JWT do Supabase Auth>`) e só recebem os dados da loja ligada ao login. O dispositivo também pode ler com o seu `Device-Token`. Sem credencial, só o dashboard da loja de demonstração é público.
+- **Segurança:** o app guarda só o login do cliente; o token do dispositivo fica apenas no ESP32. Nunca commitar tokens no git.
 
 ## Dimensionamento (estimativa para 1 dispositivo)
 

@@ -43,11 +43,17 @@ Decisões do N2: o piloto é demonstrado no **simulador Wokwi** (sem hardware re
 
 As variáveis trocadas entre as 3 partes estão em [`fase2-n2/CONTRATO-DE-DADOS.md`](fase2-n2/CONTRATO-DE-DADOS.md). Os guias `DIVISAO-DE-TAREFAS` e `PASSO-A-PASSO-*` são do planejamento inicial (TagoIO) e ficam como histórico.
 
+## Produto: um painel para cada cliente
+
+A PulsoBiz entrega a cada comércio o seu **login** (e-mail e senha, criados pela PulsoBiz) para o app Android e para o dashboard web. Cada cliente só vê os dados da própria loja, e o dispositivo de cada loja tem o seu token. O projeto que usamos na demonstração é uma "loja cliente" de exemplo (Loja Demo PulsoBiz). Como criar clientes: [`fase2-n2/plataforma/ONBOARDING-CLIENTE.md`](fase2-n2/plataforma/ONBOARDING-CLIENTE.md).
+
 ## Para ver o projeto rodando (professor)
 
 | O que | Onde |
 |---|---|
-| Dashboard em tempo real (público, abre no celular) | https://frolicking-crumble-35774d.netlify.app |
+| Dashboard em tempo real (modo demonstração, sem login; abre no celular) | https://frolicking-crumble-35774d.netlify.app/#demo |
+| Dashboard com login (como o cliente usa) | https://frolicking-crumble-35774d.netlify.app (e-mail e senha fornecidos pela PulsoBiz) |
+| App Android do cliente (Flutter) | [`fase2-n2/app-mobile/`](fase2-n2/app-mobile/) (APK gerado com `flutter build apk --release`) |
 | Código-fonte da plataforma | [`fase2-n2/plataforma/`](fase2-n2/plataforma/) (banco: `supabase/001_schema.sql`, função: `supabase/functions/data/index.ts`, dashboard: `dashboard/index.html`) |
 | Código-fonte do dispositivo | [`fase2-n2/dispositivo-iot/sketch.ino`](fase2-n2/dispositivo-iot/sketch.ino) |
 | Código-fonte do app | [`fase2-n2/app-mobile/lib/`](fase2-n2/app-mobile/lib/) |

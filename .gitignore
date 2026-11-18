@@ -17,3 +17,8 @@ dist/
 # Sistema
 Thumbs.db
 .DS_Store
+
+# Segredo de administracao da PulsoBiz (criar clientes)
+admin.local.txt
+teste-login.local.txt
+demo-login.local.txt

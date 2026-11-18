@@ -1,16 +1,21 @@
-/// Configuracoes do app.
+/// Configuracoes do app PulsoBiz.
 ///
-/// O token NAO fica no codigo: ele entra na hora de compilar,
-/// via `--dart-define-from-file=env.json` (arquivo ignorado pelo git).
+/// A chave abaixo e a chave PUBLICA do Supabase (feita para ficar no app/navegador).
+/// O acesso aos dados e protegido pelo login do cliente, nao por essa chave.
+/// Nenhum segredo (token de dispositivo, senha de administrador) fica no app.
 class Config {
-  static const String token = String.fromEnvironment('TAGO_TOKEN');
-  static const String baseUrl =
-      String.fromEnvironment('TAGO_URL', defaultValue: 'https://api.tago.io');
-  static const String dashboardUrl =
-      String.fromEnvironment('DASHBOARD_URL', defaultValue: '');
+  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL',
+      defaultValue: 'https://mhkaowtdlwbtrnqbftcr.supabase.co');
+  static const String publicKey = String.fromEnvironment('SUPABASE_KEY',
+      defaultValue: 'sb_publishable_fmLZEiu8o7i0qN3xoAE6_w_6AmsHzl1');
 
-  // ---- Nomes das variaveis no TagoIO ----
-  // AJUSTE AQUI conforme o CONTRATO-DE-DADOS.md
+  /// Endereco da funcao de dados (login do cliente vai no cabecalho Authorization).
+  static String get apiUrl => '$supabaseUrl/functions/v1/data';
+
+  /// Endereco do login (Supabase Auth).
+  static String get authUrl => '$supabaseUrl/auth/v1';
+
+  // ---- Nomes das variaveis (CONTRATO-DE-DADOS.md) ----
   static const String varTemperatura = 'temperatura';
   static const String varUmidade = 'umidade';
   static const String varMovimento = 'movimento';
@@ -25,9 +30,14 @@ class Config {
   static const int janelaHoras = 24;
 
   /// O dispositivo envia movimento=1 so quando detecta (nunca 0): cada registro
-  /// conta como 1 movimento. Use true apenas se ele passar a enviar 0/1 periodico.
+  /// conta como 1 movimento.
   static const bool movimentoContaBorda = false;
 
   /// "Detectado" na tela Ao vivo so se o ultimo movimento for mais novo que isso.
   static const int movimentoRecenteSegundos = 60;
+
+  /// Sem dados do dispositivo ha mais que isso (minutos) = "offline".
+  static const int offlineMinutos = 3;
+
+  static const String versao = '1.0.0';
 }

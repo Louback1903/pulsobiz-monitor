@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../config.dart';
 import '../models.dart';
-import '../tago_service.dart';
+import '../api_service.dart';
 
 class AlertsScreen extends StatefulWidget {
   const AlertsScreen({super.key});
@@ -12,7 +12,7 @@ class AlertsScreen extends StatefulWidget {
 }
 
 class _AlertsScreenState extends State<AlertsScreen> {
-  final _svc = TagoService();
+  final _svc = ApiService();
   late Future<List<Reading>> _future;
 
   @override

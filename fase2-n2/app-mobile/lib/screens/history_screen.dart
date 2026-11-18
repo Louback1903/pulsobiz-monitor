@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import '../config.dart';
 import '../report.dart';
-import '../tago_service.dart';
+import '../api_service.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -12,7 +12,7 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  final _svc = TagoService();
+  final _svc = ApiService();
   late Future<Report> _future;
 
   @override
@@ -85,7 +85,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text('Resumo das ultimas ${Config.janelaHoras} h',
+              Text('Resumo das últimas ${Config.janelaHoras} h',
                   style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 12),
               Row(
@@ -100,7 +100,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.access_time),
-                  title: const Text('Horario de pico'),
+                  title: const Text('Horário de pico'),
                   subtitle: Text(rep.peakText),
                 ),
               ),

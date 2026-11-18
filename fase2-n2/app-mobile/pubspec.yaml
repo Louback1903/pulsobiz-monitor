@@ -1,5 +1,5 @@
 name: monitor_iot
-description: App que le dados do TagoIO e mostra painel ao vivo, relatorio e alertas.
+description: "PulsoBiz Monitor - app do cliente com painel ao vivo, relatorio e alertas do comercio."
 publish_to: "none"
 version: 1.0.0+1
 
@@ -12,12 +12,23 @@ dependencies:
   http: ^1.2.0
   intl: ^0.19.0
   share_plus: ^10.0.0
-  webview_flutter: ^4.9.0
+  shared_preferences: ^2.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.1
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/brand/simbolo.png
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/brand/icone-1024.png"
+  adaptive_icon_background: "#0F2419"
+  adaptive_icon_foreground: "assets/brand/icone-adaptativo-frente.png"
+  min_sdk_android: 21

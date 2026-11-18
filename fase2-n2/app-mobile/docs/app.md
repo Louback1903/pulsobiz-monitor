@@ -1,53 +1,40 @@
-# App mobile (Flutter)
+# App PulsoBiz (Flutter / Android)
 
-App que le os dados da plataforma (Supabase) pela API REST e mostra tres telas
-(mais uma opcional com o dashboard publico, como plano B).
+App do **cliente** da PulsoBiz: cada comércio entra com o e-mail e a senha fornecidos pela PulsoBiz e vê só os dados da sua loja.
 
 | Tela | O que mostra |
 |---|---|
-| Ao vivo | Temperatura, umidade, movimento e rele; atualiza a cada 5 s |
-| Relatorio | Ultimas 24 h: media de temperatura, movimentos, alertas, movimentos por hora, horario de pico e botao de compartilhar |
-| Alertas | Ultimos 30 alertas recebidos (temperatura alta e movimento fora do expediente) |
-| Dashboard | WebView com o dashboard publico (aparece so se `DASHBOARD_URL` estiver preenchido) |
+| Login | E-mail e senha (fornecidos pela PulsoBiz). A sessão fica salva e se renova sozinha |
+| Painel | Temperatura, umidade, lotação, temperatura ideal, movimento, ventilador, status do dispositivo e gráfico de 24 h. Atualiza a cada 5 s |
+| Relatório | Últimas 24 h: média de temperatura, movimentos, alertas, movimentos por hora, horário de pico e compartilhar |
+| Alertas | Histórico dos últimos 30 alertas (temperatura alta e movimento fora do expediente) |
+| Conta | Loja, e-mail, trocar senha e sair |
 
-## Como rodar
+## Segurança
 
-1. Instale o Flutter e rode `./setup.sh` dentro de `app-mobile/` (uma vez).
-2. Copie `env.example.json` para `env.json` e preencha o token do device.
-   O `env.json` esta no `.gitignore`: **nunca commitar o token**.
-   Preencha tambem `TAGO_URL` com o endereco da plataforma
-   (`https://mhkaowtdlwbtrnqbftcr.supabase.co/functions/v1`).
-3. Rode no celular/emulador:
-   `flutter run --dart-define-from-file=env.json`
-4. Gere o APK:
-   `flutter build apk --release --dart-define-from-file=env.json`
-   O arquivo sai em `build/app/outputs/flutter-apk/app-release.apk`.
+- O app guarda **só o login do cliente** (sessão do Supabase Auth). O token do dispositivo fica só no ESP32.
+- A chave que aparece em `lib/config.dart` é a chave **pública** do Supabase (feita para ficar no app). O acesso aos dados depende do login.
+- O servidor devolve só os dados da loja ligada ao login.
 
-## Configuracao dos dados
+## Como rodar e gerar o APK
 
-Os nomes das variaveis ficam em `lib/config.dart` e seguem o `CONTRATO-DE-DADOS.md`:
-`temperatura`, `umidade`, `movimento`, `rele`, `alerta_temperatura` e
-`alerta_fora_horario`.
+Pré-requisitos: Flutter e Android Studio (SDK em `D:\Android\Sdk`).
 
-O dispositivo envia `movimento = 1` somente quando detecta (nunca envia 0).
-Por isso a tela Ao vivo mostra "Detectado" por 60 s apos o ultimo movimento e,
-depois disso, "Ultimo: HH:mm". Os alertas contam so registros com valor 1: o
-`alerta_temperatura` tambem chega com 0 quando a temperatura normaliza, e isso
-nao e alerta.
+```powershell
+$env:Path += ";D:\Pasta do ClaudeCode\tools\flutter\bin"
+$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
+cd "D:\Pasta do ClaudeCode\PulsoBiz\fase2-n2\app-mobile"
+flutter pub get
+flutter run                      # em um celular ou emulador conectado
+flutter build apk --release      # gera build\app\outputs\flutter-apk\app-release.apk
+```
 
-## Como o relatorio e calculado
+Versão no navegador (sem Android): `flutter build web` e depois `.\abrir-app.ps1`.
 
-Janela das ultimas 24 h, em 24 blocos de 1 hora (o ultimo e a hora atual):
-- temperatura media = media dos registros da janela;
-- movimentos = registros de movimento verdadeiro;
-- alertas = alertas ativos (valor 1) das duas variaveis na janela;
-- pico = hora com mais movimentos.
+O ícone do app é gerado a partir de `assets/brand/` com `dart run flutter_launcher_icons`.
+A identidade visual (logo, ícones) está em `../identidade-visual/`.
 
-O pico do app e calculado nas ultimas 24 h. O `pico_hora` enviado pelo
-dispositivo e acumulado desde que ele foi ligado, entao os dois podem diferir.
-Para conferir com o dashboard, compare usando o mesmo periodo.
+## Observações
 
-## Seguranca
-
-O token fica dentro do APK e pode ser extraido. Trocar o token da plataforma
-depois do dia 18/11.
+- O APK de teste é assinado com a chave de depuração. Para publicar na Play Store é preciso criar uma chave de assinatura própria (keystore).
+- O pico mostrado no relatório é calculado nas últimas 24 h.

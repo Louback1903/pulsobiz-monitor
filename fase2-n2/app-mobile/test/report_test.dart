@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:monitor_iot/models.dart';
 import 'package:monitor_iot/report.dart';
-import 'package:monitor_iot/tago_service.dart';
+import 'package:monitor_iot/api_service.dart';
 
 Reading r(String v, dynamic value, DateTime t) =>
     Reading(variable: v, value: value, time: t);
@@ -68,7 +68,7 @@ void main() {
             ];
       return http.Response(jsonEncode({'status': true, 'result': itens}), 200);
     });
-    final lista = await TagoService(client).fetchAlertas();
+    final lista = await ApiService(client: client, token: () async => 'jwt-de-teste').fetchAlertas();
     expect(lista.length, 2);
     expect(lista.first.variable, 'alerta_fora_horario');
   });
