@@ -39,6 +39,8 @@
     <div class="card"><h2>Ventilador (relé)</h2><div class="big" id="rele">--</div><div class="sub">liga acima de 28 °C</div></div>
     <div class="card"><h2>Movimento</h2><div class="big" id="mov">--</div><div class="sub" id="movSub">&nbsp;</div></div>
     <div class="card"><h2>Horário de pico</h2><div class="big" id="pico">--</div><div class="sub" id="picoSub">últimas 24 h</div></div>
+    <div class="card"><h2>Lotação</h2><div class="big" id="lot">--</div><div class="sub">pessoas na loja agora</div></div>
+    <div class="card"><h2>Temperatura ideal</h2><div class="big" id="ideal">--</div><div class="sub" id="idealSub">&nbsp;</div></div>
     <div class="card"><h2>Alertas (24 h)</h2><div class="big" id="nAlert">--</div><div class="sub" id="nMov">&nbsp;</div></div>
   </section>
   <section class="grid2">
@@ -119,6 +121,12 @@ function render(d) {
   } else { $("mov").textContent = "--"; $("movSub").textContent = "sem registros"; }
   const picoB = d.hourly.reduce((m, b) => (b.count > (m ? m.count : 0) ? b : m), null);
   $("pico").textContent = picoB ? picoB.label : "--"; $("picoSub").textContent = picoB ? picoB.count + " movimentos (24 h)" : "sem movimentos";
+  if (d.meta) {
+    $("lot").innerHTML = d.meta.lotacao + "<small> " + (d.meta.lotacao === 1 ? "pessoa" : "pessoas") + "</small>";
+    $("ideal").innerHTML = Number(d.meta.ideal).toFixed(1) + "<small> °C</small>";
+    $("idealSub").textContent = d.meta.estabilizada ? "estabilizada" : "ajustando a nova meta...";
+    $("idealSub").style.color = d.meta.estabilizada ? "var(--acc)" : "var(--warn)";
+  }
   $("nAlert").textContent = d.totals.alertas; $("nMov").textContent = d.totals.movimentos + " movimentos em 24 h";
   desenharLinhas($("linha"), [{ pts: d.series.temperatura, cor: "#ffb300" }, { pts: d.series.umidade, cor: "#4fc3f7" }]);
   desenharBarras($("barras"), d.hourly, picoB);

@@ -7,6 +7,10 @@
 #   .\demo.ps1 alerta_temperatura    alerta de temperatura (dispara e-mail e SMS)
 #   .\demo.ps1 alerta_fora_horario   alerta de movimento fora do expediente (e-mail e SMS)
 #   .\demo.ps1 alerta_temperatura_fim  temperatura normalizada
+#   .\demo.ps1 entrada               alguem entrou: lotacao +1 (e-mail, nova temperatura ideal)
+#   .\demo.ps1 saida                 alguem saiu: lotacao -1 (e-mail, nova temperatura ideal)
+#   .\demo.ps1 estabilizar           temperatura chega na meta: e-mail de "estabilizada"
+#   .\demo.ps1 zerar_lotacao         zera a lotacao
 param([string]$Evento = "")
 
 $segredos = Get-Content (Join-Path $PSScriptRoot "..\dispositivo-iot\secrets.h") -Raw

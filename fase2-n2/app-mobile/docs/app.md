@@ -1,6 +1,6 @@
 # App mobile (Flutter)
 
-App que le os dados do TagoIO pela API REST e mostra tres telas
+App que le os dados da plataforma (Supabase) pela API REST e mostra tres telas
 (mais uma opcional com o dashboard publico, como plano B).
 
 | Tela | O que mostra |
@@ -15,8 +15,8 @@ App que le os dados do TagoIO pela API REST e mostra tres telas
 1. Instale o Flutter e rode `./setup.sh` dentro de `app-mobile/` (uma vez).
 2. Copie `env.example.json` para `env.json` e preencha o token do device.
    O `env.json` esta no `.gitignore`: **nunca commitar o token**.
-   Se a conta do TagoIO estiver em outra regiao, preencha tambem `TAGO_URL`
-   (ex.: `https://api.us-e1.tago.io`).
+   Preencha tambem `TAGO_URL` com o endereco da plataforma
+   (`https://mhkaowtdlwbtrnqbftcr.supabase.co/functions/v1`).
 3. Rode no celular/emulador:
    `flutter run --dart-define-from-file=env.json`
 4. Gere o APK:
@@ -49,5 +49,5 @@ Para conferir com o dashboard, compare usando o mesmo periodo.
 
 ## Seguranca
 
-O token fica dentro do APK e pode ser extraido. Trocar o token no TagoIO
+O token fica dentro do APK e pode ser extraido. Trocar o token da plataforma
 depois do dia 18/11.

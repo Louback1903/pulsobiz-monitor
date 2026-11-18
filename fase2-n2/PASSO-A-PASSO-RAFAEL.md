@@ -1,3 +1,5 @@
+> **Documento histórico (planejamento inicial, TagoIO).** Em 18/11/2026 a plataforma passou a ser própria, no Supabase (o envio nativo de e-mail e SMS do TagoIO foi descontinuado). Veja o [`README.md`](../README.md) e [`plataforma/README.md`](plataforma/README.md) para o estado atual. O PDF correspondente também é histórico.
+
 # Passo a passo — Rafael Luiz (app mobile)
 
 **Projeto:** PulsoBiz Monitor, N2. **Piloto:** 18/11/2026. **Quem pede:** Thiago Louback.

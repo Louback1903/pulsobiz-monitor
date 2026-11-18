@@ -3,14 +3,16 @@
 Este arquivo é o "acordo" entre as 3 partes do projeto. **Não renomear variáveis sem avisar o grupo**: o firmware, o dashboard/alertas e o app dependem destes nomes.
 
 ```
-[ESP32]  --HTTPS/JSON-->  [TagoIO: dashboard + e-mail + SMS]  --API REST-->  [App mobile]
+[ESP32]  --HTTPS/JSON-->  [Plataforma Supabase: banco + dashboard + e-mail + SMS]  --API REST-->  [App mobile]
 ```
+
+> **Atualização (18/11/2026):** a plataforma passou do TagoIO para uma plataforma própria no Supabase (o envio nativo de e-mail e SMS do TagoIO foi descontinuado). O formato abaixo foi mantido igual, então firmware, simulador e app só mudam o endereço base. Os nomes `TAGOIO_API_HOST`, `TAGOIO_DEVICE_TOKEN` e `TAGO_URL` continuam por herança. Detalhes em [`plataforma/README.md`](plataforma/README.md).
 
 ## Como o dispositivo envia
 
-- **Endpoint:** `POST https://api.tago.io/data` (o endereço base depende da região da conta do TagoIO e é configurável: `TAGOIO_API_HOST` no firmware e no simulador, `TAGO_URL` no app)
+- **Endpoint:** `POST <host>/data`. Host atual: `https://mhkaowtdlwbtrnqbftcr.supabase.co/functions/v1` (configurável: `TAGOIO_API_HOST` no firmware e no simulador, `TAGO_URL` no app)
 - **Cabeçalhos:** `Content-Type: application/json` e `Device-Token: <token do device>`
-- **Corpo:** array JSON, um objeto por variável. O horário de cada dado é carimbado pelo TagoIO ao receber.
+- **Corpo:** array JSON, um objeto por variável. O horário de cada dado é carimbado pelo servidor ao receber.
 
 ```json
 [
@@ -35,6 +37,16 @@ Nomes em minúsculas, sem acento, com `_` (padrão do TagoIO).
 | `alerta_temperatura` | `1` ou `0` | - | `1` ao passar de 32 C, `0` ao voltar abaixo de 31 C | **gatilho de alerta** (e-mail + SMS) |
 | `alerta_fora_horario` | sempre `1` | - | movimento fora de 8h-18h, no máximo 1 a cada 5 min | **gatilho de alerta** (e-mail + SMS) |
 
+Variáveis de lotação (tratadas pela plataforma; hoje enviadas pelo script de teste, num produto real viriam de dois sensores, porta de entrada e de saída):
+
+| Variável | Valor | Efeito na plataforma |
+|---|---|---|
+| `entrada` | sempre `1` | lotação +1, e-mail "Lotação N" |
+| `saida` | sempre `1` | lotação -1 (nunca abaixo de 0), e-mail "Lotação N" |
+| `lotacao_reset` | `1` | zera a lotação |
+
+Temperatura ideal = `25 °C - 0,5 °C × pessoas`, com piso de 21 °C. Quando a meta muda, a plataforma espera 3 leituras seguidas de `temperatura` a ±0,5 °C da meta e envia o e-mail "Temperatura estabilizada". O dashboard mostra lotação, meta e se está "estabilizada" ou "ajustando".
+
 Regras do dispositivo que o resto do grupo precisa conhecer:
 
 - O relé liga acima de **28 C** e desliga abaixo de **27 C** (histerese).
@@ -42,18 +54,22 @@ Regras do dispositivo que o resto do grupo precisa conhecer:
 - `alerta_fora_horario` tem **cooldown de 5 minutos** no dispositivo para não estourar a cota de SMS/e-mail. Cada `1` recebido é uma ocorrência.
 - `movimento` com valor `1` é um **evento**: para o gráfico por hora, use a soma agrupada por hora no dashboard.
 
-## Alertas (gatilhos sugeridos para as Actions do TagoIO)
+## Alertas (disparados pela Edge Function da plataforma)
 
-| Condição | Mensagem sugerida | Canais |
+| Condição | Mensagem | Canais |
 |---|---|---|
-| `alerta_temperatura` = 1 | "Temperatura alta no ambiente: {{value}}" | e-mail + SMS |
+| `alerta_temperatura` = 1 | "Temperatura alta no ambiente (XX.X C)" | e-mail + SMS |
 | `alerta_fora_horario` = 1 | "Movimento detectado fora do expediente" | e-mail + SMS |
+| `entrada` / `saida` | "Lotação N, temperatura ideal X °C" | e-mail |
+| 3 leituras na meta | "Temperatura estabilizada em X °C" | e-mail |
+
+O mesmo alerta de temperatura ou fora do horário só dispara de novo depois de 60 s. O SMS usa o Twilio; na conta de teste só são aceitos modelos de mensagem prontos, então o texto do SMS é o modelo de alerta do Twilio (o e-mail leva o texto completo).
 
 ## Leitura pelo app (API REST)
 
-- `GET https://api.tago.io/data?variable=temperatura&qty=1` com o cabeçalho `Device-Token` devolve a leitura mais recente.
-- Parâmetros de consulta (`qty`, datas, ordenação): conferir na documentação oficial do TagoIO (seção Data, operação Get).
-- **Segurança:** o token que o app usar fica dentro do APK e pode ser extraído. Para o piloto, usar um token separado do que o ESP32 usa quando o TagoIO permitir, nunca commitar no git e trocar o token depois da apresentação.
+- `GET <host>/data?variable=temperatura&qty=1` com o cabeçalho `Device-Token` devolve `{"status":true,"result":[{"variable","value","unit","time"}]}`, da mais recente para a mais antiga. Parâmetros: `variable`, `qty` (até 10000) e `start_date`.
+- `GET <host>/data?view=dashboard` (público, só leitura) devolve os dados prontos do dashboard.
+- **Segurança:** o token que o app usar fica dentro do APK e pode ser extraído. Nunca commitar no git e trocar o token depois da apresentação.
 
 ## Dimensionamento (estimativa para 1 dispositivo)
 
