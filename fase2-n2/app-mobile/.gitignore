@@ -1,0 +1,15 @@
+# NUNCA commitar o token
+env.json
+
+# Flutter / Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+.idea/
+android/local.properties
+android/key.properties
+*.jks
+*.keystore

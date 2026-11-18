@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1d12">
+<title>PulsoBiz Monitor</title>
+<style>
+  :root { --bg:#0b1410; --card:#12211a; --line:#20382b; --txt:#e8f3ec; --mut:#8fa99a; --ok:#4caf50; --warn:#ffb300; --bad:#ef5350; --acc:#43d17a; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line); }
+  h1 { margin:0; font-size:18px; letter-spacing:.3px; } h1 span { color:var(--acc); }
+  .chip { padding:4px 10px; border-radius:99px; font-size:12px; background:#1b2e24; color:var(--mut); }
+  .chip.on { background:#143d24; color:var(--acc); } .chip.off { background:#401919; color:#ff8a80; }
+  main { max-width:1100px; margin:0 auto; padding:14px; display:grid; gap:12px; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; }
+  .card h2 { margin:0 0 6px; font-size:12px; font-weight:600; color:var(--mut); text-transform:uppercase; letter-spacing:.6px; }
+  .big { font-size:30px; font-weight:700; line-height:1.1; } .big small { font-size:14px; color:var(--mut); font-weight:500; }
+  .sub { font-size:12px; color:var(--mut); margin-top:4px; }
+  .grid2 { display:grid; grid-template-columns:1fr; gap:12px; } @media (min-width:800px){ .grid2 { grid-template-columns:1fr 1fr; } }
+  canvas { width:100%; height:200px; display:block; }
+  table { width:100%; border-collapse:collapse; font-size:14px; } td { padding:8px 4px; border-top:1px solid var(--line); } td:last-child { text-align:right; color:var(--mut); }
+  .legend { display:flex; gap:14px; font-size:12px; color:var(--mut); margin-bottom:6px; } .legend i { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; }
+  .empty { color:var(--mut); padding:18px 0; text-align:center; }
+  footer { text-align:center; color:var(--mut); font-size:12px; padding:14px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Pulso<span>Biz</span> Monitor</h1>
+  <div id="status" class="chip">carregando...</div>
+</header>
+<main>
+  <section class="kpis">
+    <div class="card"><h2>Temperatura</h2><div class="big" id="temp">--</div><div class="sub" id="tempSub">&nbsp;</div></div>
+    <div class="card"><h2>Umidade</h2><div class="big" id="umid">--</div><div class="sub">relativa do ar</div></div>
+    <div class="card"><h2>Ventilador (relé)</h2><div class="big" id="rele">--</div><div class="sub">liga acima de 28 °C</div></div>
+    <div class="card"><h2>Movimento</h2><div class="big" id="mov">--</div><div class="sub" id="movSub">&nbsp;</div></div>
+    <div class="card"><h2>Horário de pico</h2><div class="big" id="pico">--</div><div class="sub" id="picoSub">últimas 24 h</div></div>
+    <div class="card"><h2>Alertas (24 h)</h2><div class="big" id="nAlert">--</div><div class="sub" id="nMov">&nbsp;</div></div>
+  </section>
+  <section class="grid2">
+    <div class="card"><h2>Temperatura e umidade (24 h)</h2>
+      <div class="legend"><span><i style="background:#ffb300"></i>Temperatura °C</span><span><i style="background:#4fc3f7"></i>Umidade %</span></div>
+      <canvas id="linha"></canvas></div>
+    <div class="card"><h2>Movimentos por hora</h2>
+      <div class="legend"><span><i style="background:#43d17a"></i>movimentos</span><span><i style="background:#ff7043"></i>pico</span></div>
+      <canvas id="barras"></canvas></div>
+  </section>
+  <section class="card"><h2>Últimos alertas</h2><div id="alertas"></div></section>
+</main>
+<footer>Atualiza sozinho a cada 5 s. Dados enviados pelo dispositivo ESP32.</footer>
+<script>
+// Endereco da funcao "data" do Supabase (sem a parte ?view=...). Ajustado na publicacao.
+const API = "https://mhkaowtdlwbtrnqbftcr.supabase.co/functions/v1/data";
+const FUSO = "America/Recife";
+const $ = (id) => document.getElementById(id);
+const fmtHora = (t) => new Date(t).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: FUSO });
+const fmtDataHora = (t) => new Date(t).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: FUSO });
+
+function prep(canvas) {
+  const r = devicePixelRatio || 1, w = canvas.clientWidth, h = canvas.clientHeight;
+  canvas.width = w * r; canvas.height = h * r;
+  const c = canvas.getContext("2d"); c.setTransform(r, 0, 0, r, 0, 0); c.clearRect(0, 0, w, h);
+  return { c, w, h };
+}
+
+function desenharLinhas(canvas, series) {
+  const { c, w, h } = prep(canvas); const pad = { l: 34, r: 34, t: 8, b: 20 };
+  const todos = series.flatMap((s) => s.pts); if (todos.length < 2) { c.fillStyle = "#8fa99a"; c.font = "13px system-ui"; c.textAlign = "center"; c.fillText("Aguardando dados...", w / 2, h / 2); return; }
+  const t0 = Math.min(...todos.map((p) => p[0])), t1 = Math.max(...todos.map((p) => p[0]));
+  const x = (t) => pad.l + ((t - t0) / Math.max(t1 - t0, 1)) * (w - pad.l - pad.r);
+  c.strokeStyle = "#20382b"; c.fillStyle = "#8fa99a"; c.font = "11px system-ui"; c.lineWidth = 1;
+  series.forEach((s, i) => {
+    if (s.pts.length === 0) return;
+    const vs = s.pts.map((p) => p[1]); let mn = Math.min(...vs), mx = Math.max(...vs); if (mx - mn < 2) { mx += 1; mn -= 1; }
+    const y = (v) => pad.t + (1 - (v - mn) / (mx - mn)) * (h - pad.t - pad.b);
+    c.beginPath(); s.pts.forEach((p, k) => (k ? c.lineTo(x(p[0]), y(p[1])) : c.moveTo(x(p[0]), y(p[1])))); c.strokeStyle = s.cor; c.lineWidth = 2; c.stroke();
+    c.fillStyle = s.cor; c.textAlign = i ? "left" : "right"; const ex = i ? w - pad.r + 3 : pad.l - 3;
+    c.fillText(mx.toFixed(0), ex, pad.t + 8); c.fillText(mn.toFixed(0), ex, h - pad.b);
+  });
+  c.fillStyle = "#8fa99a"; c.textAlign = "center";
+  for (let k = 0; k <= 4; k++) { const t = t0 + ((t1 - t0) * k) / 4; c.fillText(fmtHora(t), x(t), h - 5); }
+}
+
+function desenharBarras(canvas, horas, pico) {
+  const { c, w, h } = prep(canvas); const pad = { l: 22, r: 6, t: 14, b: 20 };
+  const max = Math.max(1, ...horas.map((b) => b.count)); const bw = (w - pad.l - pad.r) / horas.length;
+  c.font = "10px system-ui"; c.textAlign = "center";
+  horas.forEach((b, i) => {
+    const bh = (b.count / max) * (h - pad.t - pad.b), bx = pad.l + i * bw + 1.5;
+    c.fillStyle = b === pico ? "#ff7043" : "#43d17a"; c.fillRect(bx, h - pad.b - bh, Math.max(bw - 3, 1), bh);
+    if (b.count > 0) { c.fillStyle = "#e8f3ec"; c.fillText(b.count, bx + (bw - 3) / 2, h - pad.b - bh - 3); }
+    if (i % 3 === 0) { c.fillStyle = "#8fa99a"; c.fillText(b.label.replace("h", ""), bx + (bw - 3) / 2, h - 6); }
+  });
+}
+
+let ultimo = null;
+function render(d) {
+  ultimo = d; const L = d.latest, agora = new Date(d.now).getTime();
+  const idade = Math.max(0, ...["temperatura", "umidade"].map((k) => (L[k] ? 0 : 1e12)));
+  const ref = L.temperatura ? new Date(L.temperatura.t).getTime() : 0;
+  const online = ref && agora - ref < 3 * 60 * 1000;
+  $("status").textContent = online ? "dispositivo online" : (ref ? "sem dados há " + Math.round((agora - ref) / 60000) + " min" : "sem dados ainda");
+  $("status").className = "chip " + (online ? "on" : "off");
+  const tv = L.temperatura ? Number(L.temperatura.v) : null;
+  $("temp").innerHTML = tv === null ? "--" : tv.toFixed(1) + "<small> °C</small>";
+  $("tempSub").textContent = tv === null ? "" : (tv > 32 ? "ALERTA: acima de 32 °C" : tv > 28 ? "acima de 28 °C" : "normal");
+  $("umid").innerHTML = L.umidade ? Number(L.umidade.v).toFixed(0) + "<small> %</small>" : "--";
+  const rele = L.rele ? Number(L.rele.v) === 1 : null;
+  $("rele").textContent = rele === null ? "--" : rele ? "LIGADO" : "desligado";
+  $("rele").style.color = rele ? "var(--acc)" : "";
+  if (L.movimento) {
+    const rec = agora - new Date(L.movimento.t).getTime() < 60000;
+    $("mov").textContent = rec ? "Detectado" : "Nenhum agora"; $("mov").style.color = rec ? "var(--warn)" : "";
+    $("movSub").textContent = "último às " + fmtHora(L.movimento.t);
+  } else { $("mov").textContent = "--"; $("movSub").textContent = "sem registros"; }
+  const picoB = d.hourly.reduce((m, b) => (b.count > (m ? m.count : 0) ? b : m), null);
+  $("pico").textContent = picoB ? picoB.label : "--"; $("picoSub").textContent = picoB ? picoB.count + " movimentos (24 h)" : "sem movimentos";
+  $("nAlert").textContent = d.totals.alertas; $("nMov").textContent = d.totals.movimentos + " movimentos em 24 h";
+  desenharLinhas($("linha"), [{ pts: d.series.temperatura, cor: "#ffb300" }, { pts: d.series.umidade, cor: "#4fc3f7" }]);
+  desenharBarras($("barras"), d.hourly, picoB);
+  $("alertas").innerHTML = d.alerts.length
+    ? "<table>" + d.alerts.map((a) => `<tr><td>⚠ ${a.text}</td><td>${fmtDataHora(a.t)}</td></tr>`).join("") + "</table>"
+    : '<div class="empty">Nenhum alerta registrado.</div>';
+}
+
+async function carregar() {
+  try {
+    const r = await fetch(API + "?view=dashboard", { cache: "no-store" });
+    const d = await r.json(); if (d.status) render(d);
+  } catch (e) { $("status").textContent = "sem conexão"; $("status").className = "chip off"; }
+}
+addEventListener("resize", () => ultimo && render(ultimo));
+carregar(); setInterval(carregar, 5000);
+</script>
+</body>
+</html>
