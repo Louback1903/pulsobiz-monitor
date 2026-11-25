@@ -22,3 +22,6 @@ Thumbs.db
 admin.local.txt
 teste-login.local.txt
 demo-login.local.txt
+
+# APK gerado localmente (grande demais para o git; distribuir por Release/Drive)
+*.apk

@@ -9,7 +9,9 @@
 #   .\gerar-apk.ps1
 # O arquivo sai em build\app\outputs\flutter-apk\app-release.apk (copiado tambem para PulsoBiz.apk nesta pasta).
 
-$ErrorActionPreference = "Stop"
+# "Continue": avisos que o Gradle/Flutter escrevem no stderr nao podem interromper o script
+# (no PowerShell 5.1 eles viram "NativeCommandError"). O resultado do build e checado por $LASTEXITCODE.
+$ErrorActionPreference = "Continue"
 $androidStudioJbr = "D:\Android Studio New\jbr"
 if (-not (Test-Path $androidStudioJbr)) { $androidStudioJbr = "C:\Program Files\Android\Android Studio\jbr" }
 $env:JAVA_HOME = $androidStudioJbr
@@ -18,7 +20,7 @@ $env:ANDROID_SDK_ROOT = "D:\Android\Sdk"
 $env:Path += ";D:\Pasta do ClaudeCode\tools\flutter\bin"
 
 Write-Host "1/4 Encerrando daemons antigos do Gradle/Kotlin..."
-& "$PSScriptRoot\android\gradlew.bat" --stop 2>$null | Out-Null
+try { cmd /c "`"$PSScriptRoot\android\gradlew.bat`" --stop >nul 2>&1" } catch {}
 Get-CimInstance Win32_Process -Filter "Name='java.exe'" |
   Where-Object { $_.CommandLine -match "kotlin-build-tools|KotlinCompileDaemon|GradleDaemon" } |
   ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
@@ -34,6 +36,7 @@ flutter build apk --release
 if ($LASTEXITCODE -ne 0) { Write-Host "O build falhou. Se a mensagem fala de memoria, feche programas e tente de novo."; exit 1 }
 
 $apk = Join-Path $PSScriptRoot "build\app\outputs\flutter-apk\app-release.apk"
+if (-not (Test-Path $apk)) { Write-Host "O build terminou mas o APK nao foi encontrado em $apk"; exit 1 }
 Copy-Item $apk (Join-Path $PSScriptRoot "PulsoBiz.apk") -Force
 Write-Host "4/4 Pronto: $PSScriptRoot\PulsoBiz.apk"
 Write-Host "Para instalar: copie o PulsoBiz.apk para o celular e abra (permita instalar de fontes desconhecidas) ou use: adb install -r PulsoBiz.apk"
