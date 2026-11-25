@@ -223,7 +223,7 @@ bool enviarParaNuvem(const String& payload) {
   client.setInsecure();
 
   HTTPClient http;
-  http.setTimeout(5000);
+  http.setTimeout(10000);  // TLS no simulador pode demorar
   String urlNuvem = String(TAGOIO_API_HOST) + "/data";
   if (!http.begin(client, urlNuvem)) {
     statusNuvem = "ERRO";
@@ -361,7 +361,7 @@ void lerDhtEControlar() {
 void conectarWiFi() {
   Serial.printf("[WIFI] Conectando em \"%s\"...\n", WIFI_SSID);
   WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD, 6);  // canal 6: conexao rapida no Wokwi-GUEST
 
   unsigned long inicio = millis();
   while (WiFi.status() != WL_CONNECTED && millis() - inicio < 15000) {
@@ -383,7 +383,7 @@ void garantirWiFi(unsigned long agora) {
   ultimaTentativaWifiMs = agora;
   Serial.println("[WIFI] Reconectando...");
   WiFi.disconnect();
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD, 6);  // canal 6: conexao rapida no Wokwi-GUEST
 }
 
 // ---------------------------------------------------------------------------
